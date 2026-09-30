@@ -8,6 +8,7 @@ import tn.esprit.autoloc.domain.enums.RoleEmploye;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "equipement")
@@ -20,4 +21,6 @@ public class Equipement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEquipement;
     private String libelle;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Vehicule> vehicules;
 }

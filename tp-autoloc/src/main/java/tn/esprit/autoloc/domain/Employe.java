@@ -22,4 +22,6 @@ public class Employe {
     private String nom;
     private String prenom;
     private RoleEmploye description;
+    @ManyToOne
+    Agence agence;
 }

@@ -8,6 +8,8 @@ import tn.esprit.autoloc.domain.enums.CategorieVehicule;
 import tn.esprit.autoloc.domain.enums.StatutVehicule;
 
 import java.math.BigDecimal;
+import java.util.Set;
+
 @Entity
 @Table(name = "vehicule")
 @Getter
@@ -24,4 +26,13 @@ public class Vehicule {
     private CategorieVehicule categorie;
     private BigDecimal tarifJournalier;
     private StatutVehicule statut;
+    @ManyToOne
+    Agence agence;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "vehicule")
+    private Set<Reservation> reservations;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "vehicule")
+    private Set<Maintenance> maintenances;
+    @ManyToMany(mappedBy = "vehicules",cascade = CascadeType.ALL)
+    private Set<Equipement> equipements;
+
 }

@@ -8,6 +8,7 @@ import tn.esprit.autoloc.domain.enums.RoleEmploye;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "contrat")
@@ -22,4 +23,8 @@ public class Contrat {
     private LocalDate dateSignature;
     private BigDecimal montantTotal;
     private boolean valide;
+    @OneToOne(mappedBy = "contrat")
+    private Reservation reservation;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "contrat")
+    private Set<Paiement> paiements;
 }
