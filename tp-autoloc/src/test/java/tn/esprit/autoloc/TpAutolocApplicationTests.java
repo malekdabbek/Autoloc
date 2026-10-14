@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.autoloc.domain.*;
+import tn.esprit.autoloc.exception.ResourceNotFoundException;
 import tn.esprit.autoloc.repository.*;
+import tn.esprit.autoloc.service.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
@@ -24,6 +26,18 @@ private IEmoloyeRepository employeRepository;
 private IEquipementRepository equipementRepository;
 @Autowired
 private IMaintenanceRepository maintenanceRepository;
+@Autowired
+private IAgenceService agenceService;
+@Autowired
+private IClientService clientService;
+@Autowired
+private IVehiculeService vehiculeService;
+@Autowired
+private IEmployeService employeService;
+@Autowired
+private IEquipementService equipementService;
+@Autowired
+private IMaintenanceService maintenanceService;
     @Test
     void testAgenceRepository() {
         System.out.println("********** Agence **********");
@@ -220,5 +234,199 @@ private IMaintenanceRepository maintenanceRepository;
         vehiculeRepository.deleteById(vSaved.getIdVehicule());
         System.out.println("Maintenance et véhicule supprimés.");
     }
+    @Test
+    void testAgenceService() {
+        System.out.println("********** AgenceService **********");
+        int countAvant = agenceService.findAll().size();
 
+        // create
+        Agence agence = new Agence();
+        agence.setNom("Agence Service");
+        agence.setAdresse("Avenue Habib Bourguiba");
+        agence.setTelephone("71000000");
+        agence.setVille("Tunis");
+        Agence saved = agenceService.create(agence);
+        System.out.println("Agence créée : " + saved);
+        assertNotNull(saved.getIdAgence());
+
+        // findAll
+        List<Agence> agences = agenceService.findAll();
+        System.out.println("Liste des agences : " + agences);
+        assertFalse(agences.isEmpty());
+
+        // findById
+        Agence found = agenceService.findById(saved.getIdAgence());
+        System.out.println("Agence trouvée : " + found);
+        assertEquals("Agence Service", found.getNom());
+
+        // count (via findAll, le service n'a pas de count())
+        int countApres = agenceService.findAll().size();
+        System.out.println("Nombre d'agences : " + countApres);
+        assertEquals(countAvant + 1, countApres);
+
+        // update (bonus)
+        Agence modif = new Agence();
+        modif.setNom("Agence Modifiée");
+        modif.setAdresse(saved.getAdresse());
+        modif.setTelephone(saved.getTelephone());
+        modif.setVille(saved.getVille());
+        Agence updated = agenceService.update(saved.getIdAgence(), modif);
+        System.out.println("Agence modifiée : " + updated);
+        assertEquals("Agence Modifiée", updated.getNom());
+
+        // deleteById puis vérification
+        agenceService.deleteById(saved.getIdAgence());
+        assertThrows(ResourceNotFoundException.class,
+                () -> agenceService.findById(saved.getIdAgence()));
+        assertEquals(countAvant, agenceService.findAll().size());
+        System.out.println("Agence supprimée : findById lève ResourceNotFoundException.");
+    }
+    @Test
+    void testClientService() {
+        System.out.println("********** ClientService **********");
+        int countAvant = clientService.findAll().size();
+
+        Client c1 = new Client();
+        c1.setNom("Ben Ali");
+        c1.setPrenom("Ahmed");
+        Client c2 = new Client();
+        c2.setNom("Trabelsi");
+        c2.setPrenom("Sara");
+
+        // create x2
+        Client s1 = clientService.create(c1);
+        Client s2 = clientService.create(c2);
+        System.out.println("Client 1 : " + s1);
+        System.out.println("Client 2 : " + s2);
+        assertNotNull(s1.getIdClient());
+        assertNotNull(s2.getIdClient());
+
+        // findAll
+        List<Client> clients = clientService.findAll();
+        System.out.println("Liste des clients : " + clients);
+        assertTrue(clients.size() >= 2);
+
+        // findById
+        Client found = clientService.findById(s1.getIdClient());
+        System.out.println("Client trouvé : " + found);
+        assertEquals("Ben Ali", found.getNom());
+
+        // count
+        int countApres = clientService.findAll().size();
+        System.out.println("Nombre de clients : " + countApres);
+        assertEquals(countAvant + 2, countApres);
+
+        // deleteById + vérification
+        clientService.deleteById(s1.getIdClient());
+        assertThrows(ResourceNotFoundException.class,
+                () -> clientService.findById(s1.getIdClient()));
+        clientService.deleteById(s2.getIdClient()); // nettoyage
+        assertEquals(countAvant, clientService.findAll().size());
+        System.out.println("Clients supprimés.");
+    }
+    @Test
+    void testVehiculeService() {
+        System.out.println("********** VehiculeService **********");
+        int countAvant = vehiculeService.findAll().size();
+
+        Vehicule v = new Vehicule();
+        v.setMarque("Peugeot");
+        v.setModele("208");
+
+        // create
+        Vehicule saved = vehiculeService.create(v);
+        System.out.println("Véhicule créé : " + saved);
+        assertNotNull(saved.getIdVehicule());
+
+        // findAll
+        List<Vehicule> vehicules = vehiculeService.findAll();
+        System.out.println("Liste des véhicules : " + vehicules);
+        assertFalse(vehicules.isEmpty());
+
+        // findById
+        Vehicule found = vehiculeService.findById(saved.getIdVehicule());
+        System.out.println("Véhicule trouvé : " + found);
+        assertEquals("Peugeot", found.getMarque());
+
+        // count
+        int countApres = vehiculeService.findAll().size();
+        System.out.println("Nombre de véhicules : " + countApres);
+        assertEquals(countAvant + 1, countApres);
+
+        // deleteById + vérification
+        vehiculeService.deleteById(saved.getIdVehicule());
+        assertThrows(ResourceNotFoundException.class,
+                () -> vehiculeService.findById(saved.getIdVehicule()));
+        assertEquals(countAvant, vehiculeService.findAll().size());
+        System.out.println("Véhicule supprimé.");
+    }
+    @Test
+    void testEmployeService() {
+        System.out.println("********** EmployeService **********");
+
+        Employe e = new Employe();
+        e.setNom("Mansouri");
+        e.setPrenom("Karim");
+
+        Employe saved = employeService.create(e);
+        System.out.println("Employé créé : " + saved);
+        assertNotNull(saved.getIdEmploye());
+
+        System.out.println("Tous les employés : " + employeService.findAll());
+        assertEquals("Mansouri", employeService.findById(saved.getIdEmploye()).getNom());
+
+        employeService.deleteById(saved.getIdEmploye());
+        assertThrows(ResourceNotFoundException.class,
+                () -> employeService.findById(saved.getIdEmploye()));
+        System.out.println("Employé supprimé.");
+    }
+
+    @Test
+    void testEquipementService() {
+        System.out.println("********** EquipementService **********");
+
+        Equipement eq = new Equipement();
+        eq.setLibelle("GPS");
+
+        Equipement saved = equipementService.create(eq);
+        System.out.println("Équipement créé : " + saved);
+        assertNotNull(saved.getIdEquipement());
+
+        System.out.println("Tous les équipements : " + equipementService.findAll());
+        assertEquals("GPS", equipementService.findById(saved.getIdEquipement()).getLibelle());
+
+        equipementService.deleteById(saved.getIdEquipement());
+        assertThrows(ResourceNotFoundException.class,
+                () -> equipementService.findById(saved.getIdEquipement()));
+        System.out.println("Équipement supprimé.");
+    }
+
+    @Test
+    void testMaintenanceService() {
+        System.out.println("********** MaintenanceService **********");
+
+        // le parent doit exister avant la maintenance (clé étrangère)
+        Vehicule v = new Vehicule();
+        v.setMarque("Renault");
+        v.setModele("Clio");
+        Vehicule vSaved = vehiculeService.create(v);
+
+        Maintenance m = new Maintenance();
+        m.setVehicule(vSaved);
+        // m.setDescription("Vidange"); m.setDate(LocalDate.now()); ... (selon ton entité)
+
+        Maintenance saved = maintenanceService.create(m);
+        System.out.println("Maintenance créée : " + saved);
+        assertNotNull(saved.getIdMaintenance());
+
+        System.out.println("Toutes les maintenances : " + maintenanceService.findAll());
+        assertNotNull(maintenanceService.findById(saved.getIdMaintenance()));
+
+        // supprimer l'enfant avant le parent
+        maintenanceService.deleteById(saved.getIdMaintenance());
+        assertThrows(ResourceNotFoundException.class,
+                () -> maintenanceService.findById(saved.getIdMaintenance()));
+        vehiculeService.deleteById(vSaved.getIdVehicule());
+        System.out.println("Maintenance et véhicule supprimés.");
+    }
 }
