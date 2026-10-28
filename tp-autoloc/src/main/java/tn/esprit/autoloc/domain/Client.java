@@ -1,4 +1,6 @@
 package tn.esprit.autoloc.domain;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +25,7 @@ public class Client {
     private String telephone;
     private String nomPermis;
     private LocalDate dateInscription;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "client")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
+    @JsonManagedReference("client-reservations")
     private Set<Reservation> reservations;
 }

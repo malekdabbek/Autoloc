@@ -1,4 +1,7 @@
 package tn.esprit.autoloc.domain;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,13 +29,20 @@ public class Vehicule {
     private CategorieVehicule categorie;
     private BigDecimal tarifJournalier;
     private StatutVehicule statut;
-    @ManyToOne
-    Agence agence;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "vehicule")
-    private Set<Reservation> reservations;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "vehicule")
-    private Set<Maintenance> maintenances;
-    @ManyToMany(mappedBy = "vehicules",cascade = CascadeType.ALL)
-    private Set<Equipement> equipements;
 
+    @ManyToOne
+    @JsonBackReference("agence-vehicules")
+    Agence agence;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehicule")
+    @JsonManagedReference("vehicule-reservations")
+    private Set<Reservation> reservations;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehicule")
+    @JsonManagedReference("vehicule-maintenances")
+    private Set<Maintenance> maintenances;
+
+    @ManyToMany(mappedBy = "vehicules", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Equipement> equipements;
 }

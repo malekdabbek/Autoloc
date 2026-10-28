@@ -20,6 +20,7 @@ public class ReservationServiceImpl implements IReservationService {
             throw new IllegalArgumentException(
                     "Un nouvel objet Reservation ne doit pas avoir d'identifiant");
         }
+        verifierDates(reservation);
         return reservationRepository.save(reservation);
     }
 
@@ -36,8 +37,21 @@ public class ReservationServiceImpl implements IReservationService {
 
     @Override
     public Reservation update(Long id, Reservation reservation) {
-        Reservation existant = findById(id);
+        Reservation existant = findById(id);          // 404 si absente
+        verifierDates(reservation);                   // 400 si dates invalides
+        existant.setDateDebut(reservation.getDateDebut());
+        existant.setDateFin(reservation.getDateFin());
+        existant.setStatut(reservation.getStatut());
         return reservationRepository.save(existant);
+    }
+
+    private void verifierDates(Reservation r) {
+        if (r.getDateDebut() == null || r.getDateFin() == null) {
+            throw new IllegalArgumentException("Les dates de début et de fin sont obligatoires");
+        }
+        if (r.getDateFin().isBefore(r.getDateDebut())) {
+            throw new IllegalArgumentException("La date de fin doit être postérieure à la date de début");
+        }
     }
 
     @Override

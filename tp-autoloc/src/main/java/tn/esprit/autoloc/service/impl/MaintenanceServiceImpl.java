@@ -35,10 +35,18 @@ public class MaintenanceServiceImpl implements IMaintenanceService {
     }
 
     @Override
+
+
     public Maintenance update(Long id, Maintenance maintenance) {
         Maintenance existant = findById(id);
+
+        existant.setDateDebut(maintenance.getDateDebut());
+        existant.setDateFin(maintenance.getDateFin());
+        existant.setDescription(maintenance.getDescription());
+
         return maintenanceRepository.save(existant);
     }
+
 
     @Override
     public void deleteById(Long id) {

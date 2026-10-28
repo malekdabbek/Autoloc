@@ -14,30 +14,31 @@ import java.util.Optional;
 
 @SpringBootTest
 class TpAutolocApplicationTests {
-@Autowired
-private IAgenceRepository agenceRepository;
-@Autowired
-private IClientRepository clientRepository;
-@Autowired
-private IVehiculeRepository vehiculeRepository;
-@Autowired
-private IEmoloyeRepository employeRepository;
-@Autowired
-private IEquipementRepository equipementRepository;
-@Autowired
-private IMaintenanceRepository maintenanceRepository;
-@Autowired
-private IAgenceService agenceService;
-@Autowired
-private IClientService clientService;
-@Autowired
-private IVehiculeService vehiculeService;
-@Autowired
-private IEmployeService employeService;
-@Autowired
-private IEquipementService equipementService;
-@Autowired
-private IMaintenanceService maintenanceService;
+    @Autowired
+    private IAgenceRepository agenceRepository;
+    @Autowired
+    private IClientRepository clientRepository;
+    @Autowired
+    private IVehiculeRepository vehiculeRepository;
+    @Autowired
+    private IEmoloyeRepository employeRepository;
+    @Autowired
+    private IEquipementRepository equipementRepository;
+    @Autowired
+    private IMaintenanceRepository maintenanceRepository;
+    @Autowired
+    private IAgenceService agenceService;
+    @Autowired
+    private IClientService clientService;
+    @Autowired
+    private IVehiculeService vehiculeService;
+    @Autowired
+    private IEmployeService employeService;
+    @Autowired
+    private IEquipementService equipementService;
+    @Autowired
+    private IMaintenanceService maintenanceService;
+
     @Test
     void testAgenceRepository() {
         System.out.println("********** Agence **********");
@@ -46,14 +47,14 @@ private IMaintenanceService maintenanceService;
         Agence agence = new Agence();
         agence.setNom("Agence1");
         agence.setAdresse("Tunis");
-        Agence agencesaved=agenceRepository.save(agence);
-        System.out.println("agence cree: "+agencesaved);
+        Agence agencesaved = agenceRepository.save(agence);
+        System.out.println("agence cree: " + agencesaved);
         //findAll
-        List<Agence> agences=agenceRepository.findAll();
-        System.out.println("Liste des agences: "+agences);
-        System.out.println("Nombre d'agences: "+agences.size());
+        List<Agence> agences = agenceRepository.findAll();
+        System.out.println("Liste des agences: " + agences);
+        System.out.println("Nombre d'agences: " + agences.size());
         assertNotNull(agences);
-        assertFalse(agences.isEmpty(),"La base doit contenir au moins une agence");
+        assertFalse(agences.isEmpty(), "La base doit contenir au moins une agence");
         // findById
         Optional<Agence> found = agenceRepository.findById(agencesaved.getIdAgence());
         System.out.println("Agence trouvée : " + found);
@@ -65,12 +66,12 @@ private IMaintenanceService maintenanceService;
 
         // count
         System.out.println("Nombre d'agences : " + agenceRepository.count());
-        assertEquals(countAvant+ 1, agenceRepository.count());
+        assertEquals(countAvant + 1, agenceRepository.count());
 
         // deleteById
         agenceRepository.deleteById(agencesaved.getIdAgence());
         assertFalse(agenceRepository.existsById(agencesaved.getIdAgence()));
-        assertEquals(agenceRepository.count(), agenceRepository.count());
+        assertEquals(countAvant, agenceRepository.count());
         System.out.println("Agence supprimée, existe encore ? "
                 + agenceRepository.existsById(agencesaved.getIdAgence()));
     }
@@ -123,6 +124,7 @@ private IMaintenanceService maintenanceService;
         clientRepository.deleteById(s2.getIdClient());
         assertEquals(countAvant, clientRepository.count());
     }
+
     @Test
     void testVehiculeRepository() {
         System.out.println("********** Vehicule **********");
@@ -161,6 +163,7 @@ private IMaintenanceService maintenanceService;
         assertFalse(vehiculeRepository.existsById(updated.getIdVehicule()));
         System.out.println("Véhicule supprimé.");
     }
+
     @Test
     void testEmployeRepository() {
         System.out.println("********** Employe **********");
@@ -204,7 +207,6 @@ private IMaintenanceService maintenanceService;
         System.out.println("Équipement supprimé.");
     }
 
-
     @Test
     void testMaintenanceRepository() {
         System.out.println("********** Maintenance **********");
@@ -234,6 +236,7 @@ private IMaintenanceService maintenanceService;
         vehiculeRepository.deleteById(vSaved.getIdVehicule());
         System.out.println("Maintenance et véhicule supprimés.");
     }
+
     @Test
     void testAgenceService() {
         System.out.println("********** AgenceService **********");
@@ -275,12 +278,14 @@ private IMaintenanceService maintenanceService;
         assertEquals("Agence Modifiée", updated.getNom());
 
         // deleteById puis vérification
-        agenceService.deleteById(saved.getIdAgence());
+        Long idAgence = saved.getIdAgence();
+        agenceService.deleteById(idAgence);
         assertThrows(ResourceNotFoundException.class,
-                () -> agenceService.findById(saved.getIdAgence()));
+                () -> agenceService.findById(idAgence));
         assertEquals(countAvant, agenceService.findAll().size());
         System.out.println("Agence supprimée : findById lève ResourceNotFoundException.");
     }
+
     @Test
     void testClientService() {
         System.out.println("********** ClientService **********");
@@ -317,13 +322,15 @@ private IMaintenanceService maintenanceService;
         assertEquals(countAvant + 2, countApres);
 
         // deleteById + vérification
-        clientService.deleteById(s1.getIdClient());
+        Long idClient1 = s1.getIdClient();
+        clientService.deleteById(idClient1);
         assertThrows(ResourceNotFoundException.class,
-                () -> clientService.findById(s1.getIdClient()));
+                () -> clientService.findById(idClient1));
         clientService.deleteById(s2.getIdClient()); // nettoyage
         assertEquals(countAvant, clientService.findAll().size());
         System.out.println("Clients supprimés.");
     }
+
     @Test
     void testVehiculeService() {
         System.out.println("********** VehiculeService **********");
@@ -354,12 +361,14 @@ private IMaintenanceService maintenanceService;
         assertEquals(countAvant + 1, countApres);
 
         // deleteById + vérification
-        vehiculeService.deleteById(saved.getIdVehicule());
+        Long idVehicule = saved.getIdVehicule();
+        vehiculeService.deleteById(idVehicule);
         assertThrows(ResourceNotFoundException.class,
-                () -> vehiculeService.findById(saved.getIdVehicule()));
+                () -> vehiculeService.findById(idVehicule));
         assertEquals(countAvant, vehiculeService.findAll().size());
         System.out.println("Véhicule supprimé.");
     }
+
     @Test
     void testEmployeService() {
         System.out.println("********** EmployeService **********");
@@ -375,9 +384,10 @@ private IMaintenanceService maintenanceService;
         System.out.println("Tous les employés : " + employeService.findAll());
         assertEquals("Mansouri", employeService.findById(saved.getIdEmploye()).getNom());
 
-        employeService.deleteById(saved.getIdEmploye());
+        Long idEmploye = saved.getIdEmploye();
+        employeService.deleteById(idEmploye);
         assertThrows(ResourceNotFoundException.class,
-                () -> employeService.findById(saved.getIdEmploye()));
+                () -> employeService.findById(idEmploye));
         System.out.println("Employé supprimé.");
     }
 
@@ -395,9 +405,10 @@ private IMaintenanceService maintenanceService;
         System.out.println("Tous les équipements : " + equipementService.findAll());
         assertEquals("GPS", equipementService.findById(saved.getIdEquipement()).getLibelle());
 
-        equipementService.deleteById(saved.getIdEquipement());
+        Long idEquipement = saved.getIdEquipement();
+        equipementService.deleteById(idEquipement);
         assertThrows(ResourceNotFoundException.class,
-                () -> equipementService.findById(saved.getIdEquipement()));
+                () -> equipementService.findById(idEquipement));
         System.out.println("Équipement supprimé.");
     }
 
@@ -423,9 +434,10 @@ private IMaintenanceService maintenanceService;
         assertNotNull(maintenanceService.findById(saved.getIdMaintenance()));
 
         // supprimer l'enfant avant le parent
-        maintenanceService.deleteById(saved.getIdMaintenance());
+        Long idMaintenance = saved.getIdMaintenance();
+        maintenanceService.deleteById(idMaintenance);
         assertThrows(ResourceNotFoundException.class,
-                () -> maintenanceService.findById(saved.getIdMaintenance()));
+                () -> maintenanceService.findById(idMaintenance));
         vehiculeService.deleteById(vSaved.getIdVehicule());
         System.out.println("Maintenance et véhicule supprimés.");
     }

@@ -35,11 +35,15 @@ public class VehiculeServiceImpl implements IVehiculeService {
     }
 
     @Override
-    public Vehicule update(Long id, Vehicule vehicule) {
-        Vehicule existant = findById(id);
-        existant.setMarque(vehicule.getMarque());
-        existant.setModele(vehicule.getModele());
-        return vehiculeRepository.save(existant);
+    public Vehicule update(Long id, Vehicule v) {
+        Vehicule existing = findById(id);
+        existing.setImmatriculation(v.getImmatriculation());
+        existing.setMarque(v.getMarque());
+        existing.setModele(v.getModele());
+        existing.setCategorie(v.getCategorie());
+        existing.setTarifJournalier(v.getTarifJournalier());
+        existing.setStatut(v.getStatut());
+        return vehiculeRepository.save(existing);
     }
 
     @Override

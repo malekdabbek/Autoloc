@@ -1,4 +1,5 @@
 package tn.esprit.autoloc.domain;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class Maintenance {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String description;
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
+    @JsonBackReference("vehicule-maintenances")
     private Vehicule vehicule;
 }
